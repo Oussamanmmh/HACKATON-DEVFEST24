@@ -1,7 +1,7 @@
+const Task = require("../models/taskModel");
 const { sendPushNotification } = require("../services/firebaseService");
 const User = require("../models/User");
 const machineThresholds = require("../config/machineThresholds");
-const MachineLog = require("../models/machineLogModel"); // Import the MachineLog model
 exports.processMachineData = async (data, thresholds) => {
   const { machine_id } = data;
 
@@ -12,7 +12,6 @@ exports.processMachineData = async (data, thresholds) => {
 
   const warnings = [];
 
-  // Process data based on machine_id
   switch (machine_id) {
     case "welding_robot_006":
       await handleWeldingRobot(data, thresholds, warnings);
@@ -37,17 +36,10 @@ exports.processMachineData = async (data, thresholds) => {
       return;
   }
 
-  // Save the log to the database
-  const log = new MachineLog({
-    machine_id, // ID of the machine
-    data, // The raw data received
-    warnings, // Any warnings generated during processing
-  });
+  const log = new MachineLog({});
 
-  await log.save(); // Save the log to MongoDB
   console.info("Machine log saved successfully.");
 };
-// Helper function to process Welding Robot data
 const handleWeldingRobot = async (data, thresholds, warnings) => {
   const {
     weld_temperature,
@@ -98,18 +90,7 @@ const handleWeldingRobot = async (data, thresholds, warnings) => {
     );
     await notifyWorker("welding_robot_006", "Power Consumption");
   }
-
-  // Additional properties to log but not triggering notifications
-  //   console.log("Weld Current:", weld_current);
-  //   console.log("Weld Voltage:", weld_voltage);
-  //   console.log("Weld Time:", weld_time);
-  //   console.log("Pressure Applied:", pressure_applied);
-  //   console.log("Arm Position:", arm_position);
-  //   console.log("Wire Feed Rate:", wire_feed_rate);
-  //   console.log("Gas Flow Rate:", gas_flow_rate);
-  //   console.log("Weld Strength Estimate:", weld_strength_estimate);
 };
-// Helper function to process Stamping Press data
 const handleStampingPress = async (data, thresholds, warnings) => {
   const {
     temperature,
@@ -159,18 +140,8 @@ const handleStampingPress = async (data, thresholds, warnings) => {
     );
     await notifyWorker("stamping_press_001", "Power Consumption");
   }
-
-  // Additional properties to log but not triggering notifications
-  //   console.log("Force Applied:", force_applied);
-  //   console.log("Cycle Time:", cycle_time);
-  //   console.log("Oil Pressure:", oil_pressure);
-  //   console.log("Die Alignment:", die_alignment);
-  //   console.log("Sheet Thickness:", sheet_thickness);
-  //   console.log("Noise Level:", noise_level);
-  //   console.log("Lubrication Flow Rate:", lubrication_flow_rate);
 };
 
-// Helper function to process Painting Robot data
 const handlePaintingRobot = async (data, thresholds, warnings) => {
   const {
     spray_pressure,
@@ -219,17 +190,8 @@ const handlePaintingRobot = async (data, thresholds, warnings) => {
     );
     await notifyWorker("painting_robot_002", "Humidity");
   }
-
-  // Additional properties to log but not triggering notifications
-  //   console.log("Arm Position:", arm_position);
-  //   console.log("Paint Flow Rate:", paint_flow_rate);
-  //   console.log("Atomizer Speed:", atomizer_speed);
-  //   console.log("Overspray Capture Efficiency:", overspray_capture_efficiency);
-  //   console.log("Booth Airflow Velocity:", booth_airflow_velocity);
-  //   console.log("Solvent Concentration:", solvent_concentration);
 };
 
-// Helper function to process AGV data
 const handleAGV = async (data, thresholds, warnings) => {
   const {
     battery_level,
@@ -267,18 +229,8 @@ const handleAGV = async (data, thresholds, warnings) => {
     warnings.push("Warning: AGV Speed is high! Notifying worker.");
     await notifyWorker("agv_003", "Speed");
   }
-
-  // Additional properties to log but not triggering notifications
-  //   console.log("Location:", location);
-  //   console.log("Distance Traveled:", distance_traveled);
-  //   console.log("Obstacle Detection:", obstacle_detection);
-  //   console.log("Navigation Status:", navigation_status);
-  //   console.log("Vibration Level:", vibration_level);
-  //   console.log("Temperature:", temperature);
-  //   console.log("Wheel Rotation Speed:", wheel_rotation_speed);
 };
 
-// Helper function to process CNC Machine data
 const handleCNCMachine = async (data, thresholds, warnings) => {
   const {
     spindle_speed,
@@ -320,17 +272,7 @@ const handleCNCMachine = async (data, thresholds, warnings) => {
     warnings.push("Warning: CNC Power Consumption is high! Notifying worker.");
     await notifyWorker("cnc_milling_004", "Power Consumption");
   }
-
-  // Additional properties to log but not triggering notifications
-  //   console.log("Tool Wear Level:", tool_wear_level);
-  //   console.log("Cut Depth:", cut_depth);
-  //   console.log("Feed Rate:", feed_rate);
-  //   console.log("Coolant Flow Rate:", coolant_flow_rate);
-  //   console.log("Material Hardness:", material_hardness);
-  //   console.log("Temperature:", temperature);
-  //   console.log("Chip Load:", chip_load);
 };
-// Helper function to process Leak Test data
 const handleLeakTest = async (data, thresholds, warnings) => {
   const {
     test_pressure,
@@ -372,39 +314,84 @@ const handleLeakTest = async (data, thresholds, warnings) => {
     warnings.push("Warning: Leak Rate is high! Notifying worker.");
     await notifyWorker("leak_test_005", "Leak Rate");
   }
-
-  // Additional properties to log but not triggering notifications
-  //   console.log("Test Duration:", test_duration);
-  //   console.log("Temperature:", temperature);
-  //   console.log("Fluid Type:", fluid_type);
-  //   console.log("Seal Condition:", seal_condition);
-  //   console.log("Test Cycle Count:", test_cycle_count);
 };
 
-// Generic function to notify workers
 const notifyWorker = async (machineId, issue) => {
   const workers = await User.find({ role: "worker" });
-  workers.forEach((worker) => {
+
+  workers.forEach(async (worker) => {
     if (worker.notificationsToken) {
       sendPushNotification(
         worker.notificationsToken,
         `Warning: ${issue}`,
         `Machine ${machineId} requires attention due to ${issue}.`
       );
+
+      const now = new Date();
+      let scheduledDate = new Date();
+
+      const startOfWorkDay = new Date(now.setHours(9, 0, 0, 0));
+      const endOfWorkDay = new Date(now.setHours(18, 0, 0, 0));
+
+      if (now >= startOfWorkDay && now <= endOfWorkDay) {
+        scheduledDate = new Date();
+      } else if (now < startOfWorkDay) {
+        scheduledDate = startOfWorkDay;
+      } else {
+        scheduledDate = new Date(now.setDate(now.getDate() + 1));
+        scheduledDate.setHours(9, 0, 0, 0);
+      }
+
+      const task = new Task({
+        userId: worker._id,
+        taskTitle: `Handle Warning on Machine ${machineId}`,
+        description: `The machine ${machineId} has a warning due to ${issue}. Please check it immediately.`,
+        scheduledDate: scheduledDate,
+        isDone: false,
+        machine_data: { machine_id: machineId, issue: issue },
+      });
+
+      await task.save();
     }
   });
 };
 
-// Generic function to notify managers
 const notifyManager = async (machineId, issue) => {
   const managers = await User.find({ role: "manager" });
-  managers.forEach((manager) => {
+
+  managers.forEach(async (manager) => {
     if (manager.notificationsToken) {
       sendPushNotification(
         manager.notificationsToken,
         `Critical Alert: ${issue}`,
         `Machine ${machineId} is in critical condition due to ${issue}. Immediate action required.`
       );
+
+      const now = new Date();
+      let scheduledDate = new Date();
+
+      const startOfWorkDay = new Date(now.setHours(9, 0, 0, 0));
+      const endOfWorkDay = new Date(now.setHours(18, 0, 0, 0));
+
+      if (now >= startOfWorkDay && now <= endOfWorkDay) {
+        scheduledDate = new Date();
+      } else if (now < startOfWorkDay) {
+        scheduledDate = startOfWorkDay;
+      } else {
+        scheduledDate = new Date(now.setDate(now.getDate() + 1));
+        scheduledDate.setHours(9, 0, 0, 0);
+      }
+
+      const task = new Task({
+        userId: manager._id,
+        taskTitle: `Resolve Critical Issue on Machine ${machineId}`,
+        description: `The machine ${machineId} is in critical condition due to ${issue}. Immediate action is required.`,
+        scheduledDate: scheduledDate,
+        isDone: false,
+        machine_data: { machine_id: machineId, issue: issue },
+      });
+
+      await task.save();
     }
   });
 };
