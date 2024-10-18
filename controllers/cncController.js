@@ -1,23 +1,23 @@
-const CNCMachine = require("../models/CNCMillingThreshold");
+const CNCMachine = require("../models/cncModel");
 const CNCMachineThreshold = require("../models/CNCMillingThreshold");
+const EnergyConsumption = require("../models/EnergyConsumption");
 const { processMachineData } = require("../controllers/machineController");
 
 exports.receiveData = async (req, res) => {
   try {
     const data = req.body;
 
-    // check if there are documents in the database 
-    const existingData = await CNCMachine.findOne({ machine_id: data.machine_id });
+    const existingData = await CNCMachineThreshold.findOne({
+      machine_id: data.machine_id,
+    });
 
     if (!existingData) {
-      // generate data doucment which already has defuaalt values
-      const dataDocument = new CNCMachine({
+      const dataDocument = new CNCMachineThreshold({
         machine_id: data.machine_id,
       });
       await dataDocument.save();
     }
 
-    // Fetch the thresholds for the CNC machine from MongoDB
     const thresholds = await CNCMachineThreshold.findOne({
       machine_id: data.machine_id,
     });
@@ -26,14 +26,63 @@ exports.receiveData = async (req, res) => {
       return res.status(400).send("Thresholds not found for cnc_milling_004");
     }
 
-    // Pass the data and thresholds to processMachineData for analysis
     await processMachineData(data, thresholds);
 
-    res.status(200).send("CNC Machine data stored and processed");
+    const historicalLogs = await CNCMachine.find({
+      machine_id: data.machine_id,
+    })
+      .sort({ timestamp: -1 })
+      .limit(50);
+
+    const totalEnergy = calculateEnergy(historicalLogs, data, "cncMachine");
+
+    const shift = determineShift();
+    const energyLog = new EnergyConsumption({
+      machine_id: data.machine_id,
+      energy: totalEnergy,
+      shift: shift,
+      timestamp: new Date(),
+    });
+    await energyLog.save();
+    console.log("energy saved .....", totalEnergy);
+
+    res
+      .status(200)
+      .send("CNC Machine data stored, analyzed, and energy logged");
   } catch (error) {
     console.error("Error storing CNC machine data:", error);
     res.status(500).send("Server Error");
   }
+};
+
+// Determine shift based on current time
+const determineShift = () => {
+  const currentHour = new Date().getHours();
+  if (currentHour >= 6 && currentHour < 14) {
+    return "Morning";
+  } else if (currentHour >= 14 && currentHour < 22) {
+    return "Afternoon";
+  } else {
+    return "Night";
+  }
+};
+const calculateEnergy = (historicalLogs, realTimeData, machineType) => {
+  let totalEnergy = 0;
+
+  if (machineType === "cncMachine") {
+    // Calculate energy based on power consumption and spindle speed
+    historicalLogs.forEach((log) => {
+      if (log.power_consumption) {
+        totalEnergy += log.power_consumption;
+      }
+    });
+
+    if (realTimeData.power_consumption) {
+      totalEnergy += realTimeData.power_consumption;
+    }
+  }
+
+  return totalEnergy;
 };
 
 exports.getData = async (req, res) => {

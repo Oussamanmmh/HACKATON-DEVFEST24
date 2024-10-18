@@ -1,24 +1,23 @@
 const PaintingRobot = require("../models/paintingRobotModel");
 const PaintingRobotThreshold = require("../models/PaintingRobotThreshold");
+const EnergyConsumption = require("../models/EnergyConsumption");
 const { processMachineData } = require("../controllers/machineController");
 
 exports.receiveData = async (req, res) => {
   try {
     const data = req.body;
 
-    // check if there are documents in the database
     const existingData = await PaintingRobotThreshold.findOne({
       machine_id: data.machine_id,
     });
 
     if (!existingData) {
-      // generate data doucment which already has defuaalt values
       const dataDocument = new PaintingRobotThreshold({
         machine_id: data.machine_id,
       });
       await dataDocument.save();
     }
-    // Fetch the thresholds for the painting robot from MongoDB
+
     const thresholds = await PaintingRobotThreshold.findOne({
       machine_id: data.machine_id,
     });
@@ -29,14 +28,63 @@ exports.receiveData = async (req, res) => {
         .send("Thresholds not found for painting_robot_002");
     }
 
-    // Pass the data and thresholds to processMachineData for analysis
     await processMachineData(data, thresholds);
 
-    res.status(200).send("Painting Robot data stored and processed");
+    const historicalLogs = await PaintingRobot.find({
+      machine_id: data.machine_id,
+    })
+      .sort({ timestamp: -1 })
+      .limit(50);
+
+    const totalEnergy = calculateEnergy(historicalLogs, data, "paintingRobot");
+
+    const shift = determineShift();
+    const energyLog = new EnergyConsumption({
+      machine_id: data.machine_id,
+      energy: totalEnergy,
+      shift: shift,
+      timestamp: new Date(),
+    });
+    await energyLog.save();
+    console.log("energy saved .....", totalEnergy);
+
+    res
+      .status(200)
+      .send("Painting Robot data stored, analyzed, and energy logged");
   } catch (error) {
     console.error("Error storing painting robot data:", error);
     res.status(500).send("Server Error");
   }
+};
+
+// Determine shift based on current time
+const determineShift = () => {
+  const currentHour = new Date().getHours();
+  if (currentHour >= 6 && currentHour < 14) {
+    return "Morning";
+  } else if (currentHour >= 14 && currentHour < 22) {
+    return "Afternoon";
+  } else {
+    return "Night";
+  }
+};
+const calculateEnergy = (historicalLogs, realTimeData, machineType) => {
+  let totalEnergy = 0;
+
+  if (machineType === "paintingRobot") {
+    // Calculate energy based on power consumption and paint flow rate
+    historicalLogs.forEach((log) => {
+      if (log.paint_flow_rate) {
+        totalEnergy += log.paint_flow_rate;
+      }
+    });
+
+    if (realTimeData.paint_flow_rate) {
+      totalEnergy += realTimeData.paint_flow_rate;
+    }
+  }
+
+  return totalEnergy;
 };
 
 exports.getData = async (req, res) => {

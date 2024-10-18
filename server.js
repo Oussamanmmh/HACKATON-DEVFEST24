@@ -56,6 +56,7 @@ const taskRoutes = require("./routes/taskRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const userRoutes = require("./routes/userRoutes");
 const aiRoutes = require("./routes/taskSchedulerRoutes.js");
+const energyRoutes = require("./routes/energyRoutes.js");
 
 // routes
 
@@ -67,6 +68,7 @@ app.use("/tasks", taskRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/users", userRoutes);
 app.use("/ai", aiRoutes);
+app.use("/energy", energyRoutes);
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
