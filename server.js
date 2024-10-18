@@ -53,9 +53,12 @@ app.use(logger);
 // import routes
 const authRoutes = require("./routes/authRoutes");
 
+
 // routes
 
 app.use("/webhook-v1", webhookRoutes);
+app.use("/auth", authRoutes);
+
 
 app.use(globalErrorHandler);
 
