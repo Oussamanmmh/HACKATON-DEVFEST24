@@ -87,3 +87,24 @@ exports.deleteNotification = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+// Get current user's notifications (based on the JWT token)
+exports.getNotificationsForCurrentUser = async (req, res) => {
+  try {
+    // Get the userId from the token (from req.user set by authenticateToken middleware)
+    const userId = req.user.id;
+
+    // Find notifications for the current user
+    const notifications = await Notification.find({ userId });
+
+    if (!notifications || notifications.length === 0) {
+      return res.status(404).json({ message: "No notifications found." });
+    }
+
+    res.status(200).json(notifications);
+  } catch (error) {
+    console.error("Error getting notifications for current user:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
