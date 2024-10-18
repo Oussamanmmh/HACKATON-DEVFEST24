@@ -55,6 +55,7 @@ const machineThresholdRoutes = require("./routes/machineThresholdRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const userRoutes = require("./routes/userRoutes");
+const aiRoutes = require("./routes/taskSchedulerRoutes.js");
 
 // routes
 
@@ -64,9 +65,10 @@ app.use("/upload", uploadAttachment);
 app.use("/auth", authRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/notifications", notificationRoutes);
-app.use("users", userRoutes);
+app.use("/users", userRoutes);
+app.use("/ai", aiRoutes);
+
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
