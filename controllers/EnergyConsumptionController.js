@@ -1,6 +1,6 @@
 const EnergyLog = require("../models/EnergyConsumption");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const API_KEY = "YOUR_GOOGLE_API_KEY";
+const API_KEY = "AIzaSyCjOOqsIN_KuT26wdTrG0fz0tpPyXy2ULw";
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
