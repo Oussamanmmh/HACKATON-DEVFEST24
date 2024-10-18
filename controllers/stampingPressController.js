@@ -1,17 +1,35 @@
 const StampingPress = require("../models/stampingPressModel");
+const StampingPressThreshold = require("../models/StampingPressThreshold");
 const { processMachineData } = require("../controllers/machineController");
 
 exports.receiveData = async (req, res) => {
   try {
     const data = req.body;
 
-    // Save the stamping press data to the database
-    const newStampingData = new StampingPress(data);
-    await newStampingData.save();
-    // console.log("Stamping Press data saved:", data);
+    // check if there are documents in the database
+    const existingData = await StampingPressThreshold.findOne({
+      machine_id: data.machine_id,
+    });
 
-    // Pass the data to processMachineData for analysis
-    await processMachineData(data);
+    if (!existingData) {
+      const dataDocument = new StampingPressThreshold({
+        machine_id: data.machine_id,
+      });
+      await dataDocument.save();
+    }
+    // Fetch the thresholds for the stamping press from MongoDB
+    const thresholds = await StampingPressThreshold.findOne({
+      machine_id: data.machine_id,
+    });
+
+    if (!thresholds) {
+      return res
+        .status(400)
+        .send("Thresholds not found for stamping_press_001");
+    }
+
+    // Pass the data and thresholds to processMachineData for analysis
+    await processMachineData(data, thresholds);
 
     res.status(200).send("Stamping Press data stored and processed");
   } catch (error) {
@@ -19,6 +37,7 @@ exports.receiveData = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
 exports.getData = async (req, res) => {
   try {
     const data = await StampingPress.find();

@@ -1,17 +1,35 @@
 const AGV = require("../models/agvModel");
+const AGVThreshold = require("../models/AGVThreshold");
 const { processMachineData } = require("../controllers/machineController");
 
 exports.receiveData = async (req, res) => {
   try {
     const data = req.body;
 
-    // Save the AGV data to the database
-    const newAGVData = new AGV(data);
-    await newAGVData.save();
-    // console.log("AGV data saved:", data);
+    // check if there are documents in the database
+    const existingData = await AGVThreshold.findOne({
+      machine_id: data.machine_id,
+    });
 
-    // Pass the data to processMachineData for analysis
-    await processMachineData(data);
+    if (!existingData) {
+      // generate data doucment which already has defuaalt values
+      const dataDocument = new AGVThreshold({
+        machine_id: data.machine_id,
+      });
+      await dataDocument.save();
+    }
+
+    // Fetch the thresholds for the AGV from MongoDB
+    const thresholds = await AGVThreshold.findOne({
+      machine_id: data.machine_id,
+    });
+
+    if (!thresholds) {
+      return res.status(400).send("Thresholds not found for agv_003");
+    }
+
+    // Pass the data and thresholds to processMachineData for analysis
+    await processMachineData(data, thresholds);
 
     res.status(200).send("AGV data stored and processed");
   } catch (error) {

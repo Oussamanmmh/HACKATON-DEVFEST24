@@ -2,8 +2,7 @@ const { sendPushNotification } = require("../services/firebaseService");
 const User = require("../models/User");
 const machineThresholds = require("../config/machineThresholds");
 const MachineLog = require("../models/machineLogModel"); // Import the MachineLog model
-
-exports.processMachineData = async (data) => {
+exports.processMachineData = async (data, thresholds) => {
   const { machine_id } = data;
 
   if (!machine_id) {
@@ -11,53 +10,42 @@ exports.processMachineData = async (data) => {
     return;
   }
 
-  try {
-    // Check if machine_id has thresholds configured
-    const thresholds = machineThresholds[machine_id];
-    if (!thresholds) {
-      console.error(`Unknown machine ID: ${machine_id}`);
+  const warnings = [];
+
+  // Process data based on machine_id
+  switch (machine_id) {
+    case "welding_robot_006":
+      await handleWeldingRobot(data, thresholds, warnings);
+      break;
+    case "stamping_press_001":
+      await handleStampingPress(data, thresholds, warnings);
+      break;
+    case "painting_robot_002":
+      await handlePaintingRobot(data, thresholds, warnings);
+      break;
+    case "agv_003":
+      await handleAGV(data, thresholds, warnings);
+      break;
+    case "cnc_milling_004":
+      await handleCNCMachine(data, thresholds, warnings);
+      break;
+    case "leak_test_005":
+      await handleLeakTest(data, thresholds, warnings);
+      break;
+    default:
+      console.error(`Invalid machine ID: ${machine_id}`);
       return;
-    }
-
-    const warnings = [];
-
-    // Process data based on machine_id
-    switch (machine_id) {
-      case "welding_robot_006":
-        await handleWeldingRobot(data, thresholds, warnings);
-        break;
-      case "stamping_press_001":
-        await handleStampingPress(data, thresholds, warnings);
-        break;
-      case "painting_robot_002":
-        await handlePaintingRobot(data, thresholds, warnings);
-        break;
-      case "agv_003":
-        await handleAGV(data, thresholds, warnings);
-        break;
-      case "cnc_milling_004":
-        await handleCNCMachine(data, thresholds, warnings);
-        break;
-      case "leak_test_005":
-        await handleLeakTest(data, thresholds, warnings);
-        break;
-      default:
-        console.error(`Invalid machine ID: ${machine_id}`);
-        return;
-    }
-
-    // Save the log to the database
-    const log = new MachineLog({
-      machine_id, // ID of the machine
-      data, // The raw data received
-      warnings, // Any warnings generated during processing
-    });
-
-    await log.save(); // Save the log to MongoDB
-    console.log("Machine log saved successfully.");
-  } catch (error) {
-    console.error("Error processing machine data:", error);
   }
+
+  // Save the log to the database
+  const log = new MachineLog({
+    machine_id, // ID of the machine
+    data, // The raw data received
+    warnings, // Any warnings generated during processing
+  });
+
+  await log.save(); // Save the log to MongoDB
+  console.info("Machine log saved successfully.");
 };
 // Helper function to process Welding Robot data
 const handleWeldingRobot = async (data, thresholds, warnings) => {
@@ -112,14 +100,14 @@ const handleWeldingRobot = async (data, thresholds, warnings) => {
   }
 
   // Additional properties to log but not triggering notifications
-  console.log("Weld Current:", weld_current);
-  console.log("Weld Voltage:", weld_voltage);
-  console.log("Weld Time:", weld_time);
-  console.log("Pressure Applied:", pressure_applied);
-  console.log("Arm Position:", arm_position);
-  console.log("Wire Feed Rate:", wire_feed_rate);
-  console.log("Gas Flow Rate:", gas_flow_rate);
-  console.log("Weld Strength Estimate:", weld_strength_estimate);
+  //   console.log("Weld Current:", weld_current);
+  //   console.log("Weld Voltage:", weld_voltage);
+  //   console.log("Weld Time:", weld_time);
+  //   console.log("Pressure Applied:", pressure_applied);
+  //   console.log("Arm Position:", arm_position);
+  //   console.log("Wire Feed Rate:", wire_feed_rate);
+  //   console.log("Gas Flow Rate:", gas_flow_rate);
+  //   console.log("Weld Strength Estimate:", weld_strength_estimate);
 };
 // Helper function to process Stamping Press data
 const handleStampingPress = async (data, thresholds, warnings) => {
@@ -173,13 +161,13 @@ const handleStampingPress = async (data, thresholds, warnings) => {
   }
 
   // Additional properties to log but not triggering notifications
-  console.log("Force Applied:", force_applied);
-  console.log("Cycle Time:", cycle_time);
-  console.log("Oil Pressure:", oil_pressure);
-  console.log("Die Alignment:", die_alignment);
-  console.log("Sheet Thickness:", sheet_thickness);
-  console.log("Noise Level:", noise_level);
-  console.log("Lubrication Flow Rate:", lubrication_flow_rate);
+  //   console.log("Force Applied:", force_applied);
+  //   console.log("Cycle Time:", cycle_time);
+  //   console.log("Oil Pressure:", oil_pressure);
+  //   console.log("Die Alignment:", die_alignment);
+  //   console.log("Sheet Thickness:", sheet_thickness);
+  //   console.log("Noise Level:", noise_level);
+  //   console.log("Lubrication Flow Rate:", lubrication_flow_rate);
 };
 
 // Helper function to process Painting Robot data
@@ -233,12 +221,12 @@ const handlePaintingRobot = async (data, thresholds, warnings) => {
   }
 
   // Additional properties to log but not triggering notifications
-  console.log("Arm Position:", arm_position);
-  console.log("Paint Flow Rate:", paint_flow_rate);
-  console.log("Atomizer Speed:", atomizer_speed);
-  console.log("Overspray Capture Efficiency:", overspray_capture_efficiency);
-  console.log("Booth Airflow Velocity:", booth_airflow_velocity);
-  console.log("Solvent Concentration:", solvent_concentration);
+  //   console.log("Arm Position:", arm_position);
+  //   console.log("Paint Flow Rate:", paint_flow_rate);
+  //   console.log("Atomizer Speed:", atomizer_speed);
+  //   console.log("Overspray Capture Efficiency:", overspray_capture_efficiency);
+  //   console.log("Booth Airflow Velocity:", booth_airflow_velocity);
+  //   console.log("Solvent Concentration:", solvent_concentration);
 };
 
 // Helper function to process AGV data
@@ -281,13 +269,13 @@ const handleAGV = async (data, thresholds, warnings) => {
   }
 
   // Additional properties to log but not triggering notifications
-  console.log("Location:", location);
-  console.log("Distance Traveled:", distance_traveled);
-  console.log("Obstacle Detection:", obstacle_detection);
-  console.log("Navigation Status:", navigation_status);
-  console.log("Vibration Level:", vibration_level);
-  console.log("Temperature:", temperature);
-  console.log("Wheel Rotation Speed:", wheel_rotation_speed);
+  //   console.log("Location:", location);
+  //   console.log("Distance Traveled:", distance_traveled);
+  //   console.log("Obstacle Detection:", obstacle_detection);
+  //   console.log("Navigation Status:", navigation_status);
+  //   console.log("Vibration Level:", vibration_level);
+  //   console.log("Temperature:", temperature);
+  //   console.log("Wheel Rotation Speed:", wheel_rotation_speed);
 };
 
 // Helper function to process CNC Machine data
@@ -334,13 +322,13 @@ const handleCNCMachine = async (data, thresholds, warnings) => {
   }
 
   // Additional properties to log but not triggering notifications
-  console.log("Tool Wear Level:", tool_wear_level);
-  console.log("Cut Depth:", cut_depth);
-  console.log("Feed Rate:", feed_rate);
-  console.log("Coolant Flow Rate:", coolant_flow_rate);
-  console.log("Material Hardness:", material_hardness);
-  console.log("Temperature:", temperature);
-  console.log("Chip Load:", chip_load);
+  //   console.log("Tool Wear Level:", tool_wear_level);
+  //   console.log("Cut Depth:", cut_depth);
+  //   console.log("Feed Rate:", feed_rate);
+  //   console.log("Coolant Flow Rate:", coolant_flow_rate);
+  //   console.log("Material Hardness:", material_hardness);
+  //   console.log("Temperature:", temperature);
+  //   console.log("Chip Load:", chip_load);
 };
 // Helper function to process Leak Test data
 const handleLeakTest = async (data, thresholds, warnings) => {
@@ -386,11 +374,11 @@ const handleLeakTest = async (data, thresholds, warnings) => {
   }
 
   // Additional properties to log but not triggering notifications
-  console.log("Test Duration:", test_duration);
-  console.log("Temperature:", temperature);
-  console.log("Fluid Type:", fluid_type);
-  console.log("Seal Condition:", seal_condition);
-  console.log("Test Cycle Count:", test_cycle_count);
+  //   console.log("Test Duration:", test_duration);
+  //   console.log("Temperature:", temperature);
+  //   console.log("Fluid Type:", fluid_type);
+  //   console.log("Seal Condition:", seal_condition);
+  //   console.log("Test Cycle Count:", test_cycle_count);
 };
 
 // Generic function to notify workers

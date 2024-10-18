@@ -7,7 +7,6 @@ const paintingRobotController = require("../controllers/paintingRobotController"
 const agvController = require("../controllers/agvController");
 const cncController = require("../controllers/cncController");
 const leakTestController = require("../controllers/leakTestController");
-const { processMachineData } = require("../controllers/machineController"); // Correctly import the controller function
 
 // Define routes for each machine type
 router.post("/welding-robot", weldingRobotController.receiveData);
@@ -28,6 +27,5 @@ router.get("/cnc-machine", cncController.getData);
 router.post("/leak-test", leakTestController.receiveData);
 router.get("/leak-test", leakTestController.getData);
 
-// router.post("/receive-data", processMachineData);
 
 module.exports = router;
