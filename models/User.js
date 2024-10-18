@@ -25,7 +25,8 @@ const userSchema = new mongoose.Schema(
       full: { type: String },
       default: { type: String },
     },
-    // add otp
+    tasks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Task" }], // for scalablity
+    
     otp: { type: String }, // for scalablity
     otpExpires: { type: Date }, // for scalablity
     notificationsToken: { type: String },
