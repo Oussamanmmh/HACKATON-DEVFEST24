@@ -1,17 +1,18 @@
 const Task = require("../models/taskModel");
+const User = require("../models/User");
 
-// Create a new task
 exports.createTask = async (req, res) => {
   try {
-    const { userId, taskTitle, description, scheduledDate, isCritical, machineData } = req.body;
+    const { taskTitle, description, scheduledDate, isCritical, machineData } =
+      req.body;
 
     const newTask = new Task({
-      userId,
+      userId: req.user._id,
       taskTitle,
       description,
       scheduledDate,
       isCritical,
-      machineData
+      machineData,
     });
 
     const savedTask = await newTask.save();
@@ -22,10 +23,12 @@ exports.createTask = async (req, res) => {
   }
 };
 
-// Get all tasks
 exports.getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find().populate("userId", "name email");
+    const tasks = await Task.find({ userId: req.user._id }).populate(
+      "userId",
+      "name email"
+    );
     res.status(200).json(tasks);
   } catch (error) {
     console.error("Error retrieving tasks:", error);
@@ -33,12 +36,16 @@ exports.getAllTasks = async (req, res) => {
   }
 };
 
-// Get a task by ID
 exports.getTaskById = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id).populate("userId", "name email");
+    const task = await Task.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    }).populate("userId", "name email");
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({
+        message: "Task not found or you don't have permission to access it",
+      });
     }
     res.status(200).json(task);
   } catch (error) {
@@ -47,16 +54,21 @@ exports.getTaskById = async (req, res) => {
   }
 };
 
-// Update a task by ID
 exports.updateTask = async (req, res) => {
   try {
-    const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {
-      new: true, // Return the updated document
-      runValidators: true // Run schema validators
-    });
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user._id },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!updatedTask) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({
+        message: "Task not found or you don't have permission to update it",
+      });
     }
 
     res.status(200).json(updatedTask);
@@ -66,13 +78,17 @@ exports.updateTask = async (req, res) => {
   }
 };
 
-// Delete a task by ID
 exports.deleteTask = async (req, res) => {
   try {
-    const deletedTask = await Task.findByIdAndDelete(req.params.id);
+    const deletedTask = await Task.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
 
     if (!deletedTask) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({
+        message: "Task not found or you don't have permission to delete it",
+      });
     }
 
     res.status(200).json({ message: "Task deleted successfully" });
@@ -82,13 +98,17 @@ exports.deleteTask = async (req, res) => {
   }
 };
 
-// Mark task as done
 exports.markTaskAsDone = async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await Task.findOne({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
 
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res.status(404).json({
+        message: "Task not found or you don't have permission to update it",
+      });
     }
 
     task.isDone = true;
@@ -101,21 +121,20 @@ exports.markTaskAsDone = async (req, res) => {
   }
 };
 
-
-// Get tasks by user ID
 exports.getTasksByUserId = async (req, res) => {
-    try {
-      const userId = req.params.userId; // Get user ID from request params
-      const tasks = await Task.find({ userId }).populate("userId", "name email");
-  
-      if (!tasks || tasks.length === 0) {
-        return res.status(404).json({ message: "No tasks found for this user" });
-      }
-  
-      res.status(200).json(tasks);
-    } catch (error) {
-      console.error("Error retrieving tasks by user ID:", error);
-      res.status(500).json({ message: "Server Error" });
+  try {
+    const tasks = await Task.find({ userId: req.user._id }).populate(
+      "userId",
+      "name email"
+    );
+
+    if (!tasks || tasks.length === 0) {
+      return res.status(404).json({ message: "No tasks found for this user" });
     }
-  };
-  
+
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error("Error retrieving tasks by user ID:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};

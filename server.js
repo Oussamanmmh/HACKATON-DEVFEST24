@@ -15,7 +15,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const { Server } = require("socket.io");
 
-const logger = require("./middlewares/logger");
+const logger = require("./middleware/logger.js");
 const { globalErrorHandler } = require("./utils/errorHandler");
 const webhookRoutes = require("./routes/webhookRoutes");
 

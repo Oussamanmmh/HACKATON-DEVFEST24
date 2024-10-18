@@ -127,6 +127,7 @@ exports.generateTaskSchedule = async (req, res) => {
       await newTask.save();
 
       if (task.priority === "high" || task.priority === "medium") {
+        console.log("user notified");
         await notifyWorker(
           task.machine_id,
           task.action,
@@ -146,7 +147,7 @@ exports.generateTaskSchedule = async (req, res) => {
 };
 
 const notifyWorker = async (machineId, action, scheduledDate, workerRole) => {
-  const workers = await User.find({ role: workerRole });
+  const workers = await User.find({});
 
   workers.forEach(async (worker) => {
     if (worker.notificationsToken) {
@@ -195,6 +196,8 @@ const notifyWorker = async (machineId, action, scheduledDate, workerRole) => {
         action: action,
       },
     });
+
+    console.log("Task created:", task);
 
     await task.save();
 
