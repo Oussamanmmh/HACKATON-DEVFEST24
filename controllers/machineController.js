@@ -56,11 +56,13 @@ const handleWeldingRobot = async (data, thresholds, warnings) => {
   } = data;
 
   if (weld_temperature >= thresholds.weld_temperature.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Welding Robot Temperature is too high! Notifying manager."
     );
     await notifyManager("welding_robot_006", "Temperature");
   } else if (weld_temperature >= thresholds.weld_temperature.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Welding Robot Temperature is high! Notifying worker."
     );
@@ -68,11 +70,13 @@ const handleWeldingRobot = async (data, thresholds, warnings) => {
   }
 
   if (vibration_level >= thresholds.vibration_level.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Welding Robot Vibration is too high! Notifying manager."
     );
     await notifyManager("welding_robot_006", "Vibration");
   } else if (vibration_level >= thresholds.vibration_level.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Welding Robot Vibration is high! Notifying worker."
     );
@@ -80,11 +84,13 @@ const handleWeldingRobot = async (data, thresholds, warnings) => {
   }
 
   if (power_consumption >= thresholds.power_consumption.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Welding Robot Power Consumption is too high! Notifying manager."
     );
     await notifyManager("welding_robot_006", "Power Consumption");
   } else if (power_consumption >= thresholds.power_consumption.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Welding Robot Power Consumption is high! Notifying worker."
     );
@@ -106,11 +112,13 @@ const handleStampingPress = async (data, thresholds, warnings) => {
   } = data;
 
   if (temperature >= thresholds.temperature.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Stamping Press Temperature is too high! Notifying manager."
     );
     await notifyManager("stamping_press_001", "Temperature");
   } else if (temperature >= thresholds.temperature.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Stamping Press Temperature is high! Notifying worker."
     );
@@ -118,11 +126,13 @@ const handleStampingPress = async (data, thresholds, warnings) => {
   }
 
   if (vibration_level >= thresholds.vibration_level.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Stamping Press Vibration is too high! Notifying manager."
     );
     await notifyManager("stamping_press_001", "Vibration");
   } else if (vibration_level >= thresholds.vibration_level.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Stamping Press Vibration is high! Notifying worker."
     );
@@ -130,11 +140,13 @@ const handleStampingPress = async (data, thresholds, warnings) => {
   }
 
   if (power_consumption >= thresholds.power_consumption.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Stamping Press Power Consumption is too high! Notifying manager."
     );
     await notifyManager("stamping_press_001", "Power Consumption");
   } else if (power_consumption >= thresholds.power_consumption.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Stamping Press Power Consumption is high! Notifying worker."
     );
@@ -156,11 +168,13 @@ const handlePaintingRobot = async (data, thresholds, warnings) => {
   } = data;
 
   if (spray_pressure >= thresholds.spray_pressure.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Painting Robot Spray Pressure is too high! Notifying manager."
     );
     await notifyManager("painting_robot_002", "Spray Pressure");
   } else if (spray_pressure >= thresholds.spray_pressure.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Painting Robot Spray Pressure is high! Notifying worker."
     );
@@ -168,11 +182,13 @@ const handlePaintingRobot = async (data, thresholds, warnings) => {
   }
 
   if (paint_thickness >= thresholds.paint_thickness.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Painting Robot Paint Thickness is too high! Notifying manager."
     );
     await notifyManager("painting_robot_002", "Paint Thickness");
   } else if (paint_thickness >= thresholds.paint_thickness.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Painting Robot Paint Thickness is high! Notifying worker."
     );
@@ -180,11 +196,13 @@ const handlePaintingRobot = async (data, thresholds, warnings) => {
   }
 
   if (humidity >= thresholds.humidity.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Painting Robot Humidity is too high! Notifying manager."
     );
     await notifyManager("painting_robot_002", "Humidity");
   } else if (humidity >= thresholds.humidity.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Painting Robot Humidity is high! Notifying worker."
     );
@@ -207,25 +225,31 @@ const handleAGV = async (data, thresholds, warnings) => {
   } = data;
 
   if (battery_level <= thresholds.battery_level.manager) {
+    console.log("Problem happened");
     warnings.push("Critical: AGV Battery Level is too low! Notifying manager.");
     await notifyManager("agv_003", "Battery Level");
   } else if (battery_level <= thresholds.battery_level.worker) {
+    console.log("Problem happened");
     warnings.push("Warning: AGV Battery Level is low! Notifying worker.");
     await notifyWorker("agv_003", "Battery Level");
   }
 
   if (load_weight >= thresholds.load_weight.manager) {
+    console.log("Problem happened");
     warnings.push("Critical: AGV Load Weight is too high! Notifying manager.");
     await notifyManager("agv_003", "Load Weight");
   } else if (load_weight >= thresholds.load_weight.worker) {
+    console.log("Problem happened");
     warnings.push("Warning: AGV Load Weight is high! Notifying worker.");
     await notifyWorker("agv_003", "Load Weight");
   }
 
   if (speed >= thresholds.speed.manager) {
+    console.log("Problem happened");
     warnings.push("Critical: AGV Speed is too high! Notifying manager.");
     await notifyManager("agv_003", "Speed");
   } else if (speed >= thresholds.speed.worker) {
+    console.log("Problem happened");
     warnings.push("Warning: AGV Speed is high! Notifying worker.");
     await notifyWorker("agv_003", "Speed");
   }
@@ -246,29 +270,35 @@ const handleCNCMachine = async (data, thresholds, warnings) => {
   } = data;
 
   if (spindle_speed >= thresholds.spindle_speed.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: CNC Spindle Speed is too high! Notifying manager."
     );
     await notifyManager("cnc_milling_004", "Spindle Speed");
   } else if (spindle_speed >= thresholds.spindle_speed.worker) {
+    console.log("Problem happened");
     warnings.push("Warning: CNC Spindle Speed is high! Notifying worker.");
     await notifyWorker("cnc_milling_004", "Spindle Speed");
   }
 
   if (vibration_level >= thresholds.vibration_level.manager) {
+    console.log("Problem happened");
     warnings.push("Critical: CNC Vibration is too high! Notifying manager.");
     await notifyManager("cnc_milling_004", "Vibration");
   } else if (vibration_level >= thresholds.vibration_level.worker) {
+    console.log("Problem happened");
     warnings.push("Warning: CNC Vibration is high! Notifying worker.");
     await notifyWorker("cnc_milling_004", "Vibration");
   }
 
   if (power_consumption >= thresholds.power_consumption.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: CNC Power Consumption is too high! Notifying manager."
     );
     await notifyManager("cnc_milling_004", "Power Consumption");
   } else if (power_consumption >= thresholds.power_consumption.worker) {
+    console.log("Problem happened");
     warnings.push("Warning: CNC Power Consumption is high! Notifying worker.");
     await notifyWorker("cnc_milling_004", "Power Consumption");
   }
@@ -286,21 +316,25 @@ const handleLeakTest = async (data, thresholds, warnings) => {
   } = data;
 
   if (test_pressure >= thresholds.test_pressure.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Leak Test Pressure is too high! Notifying manager."
     );
     await notifyManager("leak_test_005", "Test Pressure");
   } else if (test_pressure >= thresholds.test_pressure.worker) {
+    console.log("Problem happened");
     warnings.push("Warning: Leak Test Pressure is high! Notifying worker.");
     await notifyWorker("leak_test_005", "Test Pressure");
   }
 
   if (pressure_drop >= thresholds.pressure_drop.manager) {
+    console.log("Problem happened");
     warnings.push(
       "Critical: Leak Test Pressure Drop is too high! Notifying manager."
     );
     await notifyManager("leak_test_005", "Pressure Drop");
   } else if (pressure_drop >= thresholds.pressure_drop.worker) {
+    console.log("Problem happened");
     warnings.push(
       "Warning: Leak Test Pressure Drop is high! Notifying worker."
     );
@@ -308,14 +342,15 @@ const handleLeakTest = async (data, thresholds, warnings) => {
   }
 
   if (leak_rate >= thresholds.leak_rate.manager) {
+    console.log("Problem happened");
     warnings.push("Critical: Leak Rate is too high! Notifying manager.");
     await notifyManager("leak_test_005", "Leak Rate");
   } else if (leak_rate >= thresholds.leak_rate.worker) {
+    console.log("Problem happened");
     warnings.push("Warning: Leak Rate is high! Notifying worker.");
     await notifyWorker("leak_test_005", "Leak Rate");
   }
 };
-
 const notifyWorker = async (machineId, issue) => {
   const workers = await User.find({ role: "worker" });
 
@@ -326,42 +361,51 @@ const notifyWorker = async (machineId, issue) => {
         `Warning: ${issue}`,
         `Machine ${machineId} requires attention due to ${issue}.`
       );
-
-      const now = new Date();
-      let scheduledDate = new Date();
-
-      const startOfWorkDay = new Date(now.setHours(9, 0, 0, 0));
-      const endOfWorkDay = new Date(now.setHours(18, 0, 0, 0));
-
-      if (now >= startOfWorkDay && now <= endOfWorkDay) {
-        scheduledDate = new Date();
-      } else if (now < startOfWorkDay) {
-        scheduledDate = startOfWorkDay;
-      } else {
-        scheduledDate = new Date(now.setDate(now.getDate() + 1));
-        scheduledDate.setHours(9, 0, 0, 0);
-      }
-
-      // Create a new notification in the database
-      const newNotification = new Notification({
-        userId: worker._id,
-        title: `Warning: ${issue}`,
-        message: `Machine ${machineId} requires attention due to ${issue}.`,
-        machineId: machineId,
-      });
-      await newNotification.save();
-
-      const task = new Task({
-        userId: worker._id,
-        taskTitle: `Handle Warning on Machine ${machineId}`,
-        description: `The machine ${machineId} has a warning due to ${issue}. Please check it immediately.`,
-        scheduledDate: scheduledDate,
-        isDone: false,
-        machine_data: { machine_id: machineId, issue: issue },
-      });
-
-      await task.save();
     }
+
+    const now = new Date();
+    let scheduledDate = new Date();
+
+    const startOfWorkDay = new Date(now.setHours(9, 0, 0, 0));
+    const endOfWorkDay = new Date(now.setHours(18, 0, 0, 0));
+
+    if (now >= startOfWorkDay && now <= endOfWorkDay) {
+      scheduledDate = new Date();
+    } else if (now < startOfWorkDay) {
+      scheduledDate = startOfWorkDay;
+    } else {
+      scheduledDate = new Date(now.setDate(now.getDate() + 1));
+      scheduledDate.setHours(9, 0, 0, 0);
+    }
+
+    // Create a new notification in the database
+    const newNotification = new Notification({
+      userId: worker._id,
+      title: `Warning: ${issue}`,
+      message: `Machine ${machineId} requires attention due to ${issue}.`,
+      machineId: machineId,
+    });
+    await newNotification.save();
+
+    // Push notification to the user
+    worker.notifications.push(newNotification._id);
+    await worker.save(); // Save user with updated notifications
+
+    // Create a task for the worker
+    const task = new Task({
+      userId: worker._id,
+      taskTitle: `Handle Warning on Machine ${machineId}`,
+      description: `The machine ${machineId} has a warning due to ${issue}. Please check it immediately.`,
+      scheduledDate: scheduledDate,
+      isDone: false,
+      machine_data: { machine_id: machineId, issue: issue },
+    });
+
+    await task.save();
+
+    // Push task to the user's tasks array
+    worker.tasks.push(task._id);
+    await worker.save(); // Save user with updated tasks
   });
 };
 
@@ -375,41 +419,50 @@ const notifyManager = async (machineId, issue) => {
         `Critical Alert: ${issue}`,
         `Machine ${machineId} is in critical condition due to ${issue}. Immediate action required.`
       );
-
-      const now = new Date();
-      let scheduledDate = new Date();
-
-      const startOfWorkDay = new Date(now.setHours(9, 0, 0, 0));
-      const endOfWorkDay = new Date(now.setHours(18, 0, 0, 0));
-
-      if (now >= startOfWorkDay && now <= endOfWorkDay) {
-        scheduledDate = new Date();
-      } else if (now < startOfWorkDay) {
-        scheduledDate = startOfWorkDay;
-      } else {
-        scheduledDate = new Date(now.setDate(now.getDate() + 1));
-        scheduledDate.setHours(9, 0, 0, 0);
-      }
-
-      // Create a new notification in the database
-      const newNotification = new Notification({
-        userId: manager._id,
-        title: `Warning: ${issue}`,
-        message: `Machine ${machineId} requires attention due to ${issue}.`,
-        machineId: machineId,
-      });
-      await newNotification.save();
-
-      const task = new Task({
-        userId: manager._id,
-        taskTitle: `Resolve Critical Issue on Machine ${machineId}`,
-        description: `The machine ${machineId} is in critical condition due to ${issue}. Immediate action is required.`,
-        scheduledDate: scheduledDate,
-        isDone: false,
-        machine_data: { machine_id: machineId, issue: issue },
-      });
-
-      await task.save();
     }
+
+    const now = new Date();
+    let scheduledDate = new Date();
+
+    const startOfWorkDay = new Date(now.setHours(9, 0, 0, 0));
+    const endOfWorkDay = new Date(now.setHours(18, 0, 0, 0));
+
+    if (now >= startOfWorkDay && now <= endOfWorkDay) {
+      scheduledDate = new Date();
+    } else if (now < startOfWorkDay) {
+      scheduledDate = startOfWorkDay;
+    } else {
+      scheduledDate = new Date(now.setDate(now.getDate() + 1));
+      scheduledDate.setHours(9, 0, 0, 0);
+    }
+
+    // Create a new notification in the database
+    const newNotification = new Notification({
+      userId: manager._id,
+      title: `Critical Alert: ${issue}`,
+      message: `Machine ${machineId} is in critical condition due to ${issue}. Immediate action required.`,
+      machineId: machineId,
+    });
+    await newNotification.save();
+
+    // Push notification to the user's notifications array
+    manager.notifications.push(newNotification._id);
+    await manager.save(); // Save user with updated notifications
+
+    // Create a task for the manager
+    const task = new Task({
+      userId: manager._id,
+      taskTitle: `Resolve Critical Issue on Machine ${machineId}`,
+      description: `The machine ${machineId} is in critical condition due to ${issue}. Immediate action is required.`,
+      scheduledDate: scheduledDate,
+      isDone: false,
+      machine_data: { machine_id: machineId, issue: issue },
+    });
+
+    await task.save();
+
+    // Push task to the user's tasks array
+    manager.tasks.push(task._id);
+    await manager.save(); // Save user with updated tasks
   });
 };

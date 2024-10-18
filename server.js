@@ -53,14 +53,16 @@ const authRoutes = require("./routes/authRoutes");
 const uploadAttachment = require("./routes/uploadRoutes");
 const machineThresholdRoutes = require("./routes/machineThresholdRoutes");
 const taskRoutes = require("./routes/taskRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 // routes
 
-app.use("/api/machine-thresholds", machineThresholdRoutes);
+app.use("/machine-thresholds", machineThresholdRoutes);
 app.use("/webhook-v1", webhookRoutes);
 app.use("/upload", uploadAttachment);
 app.use("/auth", authRoutes);
-app.use("/api", taskRoutes);
+app.use("/tasks", taskRoutes);
+app.use("/notifications", notificationRoutes);
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
