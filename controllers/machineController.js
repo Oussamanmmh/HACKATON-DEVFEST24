@@ -1,7 +1,7 @@
 const Task = require("../models/taskModel");
 const { sendPushNotification } = require("../services/firebaseService");
 const User = require("../models/User");
-const machineThresholds = require("../config/machineThresholds");
+const MachineLog = require("../models/machineLogModel");
 exports.processMachineData = async (data, thresholds) => {
   const { machine_id } = data;
 
@@ -342,6 +342,15 @@ const notifyWorker = async (machineId, issue) => {
         scheduledDate.setHours(9, 0, 0, 0);
       }
 
+      // Create a new notification in the database
+      const newNotification = new Notification({
+        userId: worker._id,
+        title: `Warning: ${issue}`,
+        message: `Machine ${machineId} requires attention due to ${issue}.`,
+        machineId: machineId,
+      });
+      await newNotification.save();
+
       const task = new Task({
         userId: worker._id,
         taskTitle: `Handle Warning on Machine ${machineId}`,
@@ -381,6 +390,15 @@ const notifyManager = async (machineId, issue) => {
         scheduledDate = new Date(now.setDate(now.getDate() + 1));
         scheduledDate.setHours(9, 0, 0, 0);
       }
+
+      // Create a new notification in the database
+      const newNotification = new Notification({
+        userId: manager._id,
+        title: `Warning: ${issue}`,
+        message: `Machine ${machineId} requires attention due to ${issue}.`,
+        machineId: machineId,
+      });
+      await newNotification.save();
 
       const task = new Task({
         userId: manager._id,

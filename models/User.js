@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema(
     bio: { type: String }, // for scalablity
     language: { type: String, default: "en" }, // for scalablity
     lastLogin: { type: Date }, // for scalablity
-
+    notifications: [{ type: mongoose.Schema.Types.ObjectId, ref: "Notification" }], 
     socialMediaLinks: {
       // for scalablity
       facebook: { type: String },
