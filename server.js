@@ -58,6 +58,8 @@ const userRoutes = require("./routes/userRoutes");
 const aiRoutes = require("./routes/taskSchedulerRoutes.js");
 const energyRoutes = require("./routes/energyRoutes.js");
 const chatRoutes = require("./routes/chatRoutes.js");
+const logRoutes = require('./routes/logRoutes');
+const historicalDataRoutes = require('./routes/historicalDataRoutes');
 
 // routes
 
@@ -71,6 +73,8 @@ app.use("/users", userRoutes);
 app.use("/ai", aiRoutes);
 app.use("/energy", energyRoutes);
 app.use("/chat", chatRoutes);
+app.use('/historical-data', historicalDataRoutes);
+app.use('/logs', logRoutes); // Set up route for machine logs
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
