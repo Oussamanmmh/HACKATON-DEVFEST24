@@ -1,13 +1,18 @@
 const Task = require("../models/taskModel");
-const User = require("../models/User");
 
 exports.createTask = async (req, res) => {
   try {
+    const userId = req.user?._id || req.body.userId;
+
     const { taskTitle, description, scheduledDate, isCritical, machineData } =
       req.body;
 
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
     const newTask = new Task({
-      userId: req.user._id,
+      userId,
       taskTitle,
       description,
       scheduledDate,
@@ -25,10 +30,7 @@ exports.createTask = async (req, res) => {
 
 exports.getAllTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ userId: req.user._id }).populate(
-      "userId",
-      "name email"
-    );
+    const tasks = await Task.find().populate("userId", "name email");
     res.status(200).json(tasks);
   } catch (error) {
     console.error("Error retrieving tasks:", error);
@@ -38,14 +40,12 @@ exports.getAllTasks = async (req, res) => {
 
 exports.getTaskById = async (req, res) => {
   try {
-    const task = await Task.findOne({
-      _id: req.params.id,
-      userId: req.user._id,
-    }).populate("userId", "name email");
+    const task = await Task.findById(req.params.id).populate(
+      "userId",
+      "name email"
+    );
     if (!task) {
-      return res.status(404).json({
-        message: "Task not found or you don't have permission to access it",
-      });
+      return res.status(404).json({ message: "Task not found" });
     }
     res.status(200).json(task);
   } catch (error) {
@@ -56,8 +56,13 @@ exports.getTaskById = async (req, res) => {
 
 exports.updateTask = async (req, res) => {
   try {
+    const userId = req.user?._id || req.body.userId;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
     const updatedTask = await Task.findOneAndUpdate(
-      { _id: req.params.id, userId: req.user._id },
+      { _id: req.params.id, userId },
       req.body,
       {
         new: true,
@@ -66,9 +71,9 @@ exports.updateTask = async (req, res) => {
     );
 
     if (!updatedTask) {
-      return res.status(404).json({
-        message: "Task not found or you don't have permission to update it",
-      });
+      return res
+        .status(404)
+        .json({ message: "Task not found or user not authorized" });
     }
 
     res.status(200).json(updatedTask);
@@ -80,15 +85,20 @@ exports.updateTask = async (req, res) => {
 
 exports.deleteTask = async (req, res) => {
   try {
+    const userId = req.user?._id || req.body.userId;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
     const deletedTask = await Task.findOneAndDelete({
       _id: req.params.id,
-      userId: req.user._id,
+      userId,
     });
 
     if (!deletedTask) {
-      return res.status(404).json({
-        message: "Task not found or you don't have permission to delete it",
-      });
+      return res
+        .status(404)
+        .json({ message: "Task not found or user not authorized" });
     }
 
     res.status(200).json({ message: "Task deleted successfully" });
@@ -100,15 +110,17 @@ exports.deleteTask = async (req, res) => {
 
 exports.markTaskAsDone = async (req, res) => {
   try {
-    const task = await Task.findOne({
-      _id: req.params.id,
-      userId: req.user._id,
-    });
+    const userId = req.user?._id || req.body.userId;
 
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const task = await Task.findOne({ _id: req.params.id, userId });
     if (!task) {
-      return res.status(404).json({
-        message: "Task not found or you don't have permission to update it",
-      });
+      return res
+        .status(404)
+        .json({ message: "Task not found or user not authorized" });
     }
 
     task.isDone = true;
@@ -123,10 +135,8 @@ exports.markTaskAsDone = async (req, res) => {
 
 exports.getTasksByUserId = async (req, res) => {
   try {
-    const tasks = await Task.find({ userId: req.user._id }).populate(
-      "userId",
-      "name email"
-    );
+    const userId = req.user?._id || req.params.userId;
+    const tasks = await Task.find({ userId }).populate("userId", "name email");
 
     if (!tasks || tasks.length === 0) {
       return res.status(404).json({ message: "No tasks found for this user" });

@@ -1,25 +1,16 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 
-// Create a new user
 exports.createUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Create new user
-    const newUser = new User({
-      name,
-      email,
-      password,
-      role,
-    });
-
+    const newUser = new User({ name, email, password, role });
     await newUser.save();
     res.status(201).json({ message: "User created successfully", newUser });
   } catch (error) {
@@ -27,10 +18,13 @@ exports.createUser = async (req, res) => {
   }
 };
 
-// Get a user by ID
 exports.getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId).populate("tasks").populate("notifications");
+    const userId = req.user ? req.user.id : req.params.userId;
+    const user = await User.findById(userId)
+      .populate("tasks")
+      .populate("notifications");
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -40,7 +34,6 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-// Get all users
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find().populate("tasks").populate("notifications");
@@ -50,22 +43,15 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// Update a user by ID
 exports.updateUser = async (req, res) => {
   try {
-    const { name, email, role, phoneNumber, bio, language, profileImage } = req.body;
+    const userId = req.user ? req.user.id : req.params.userId;
+    const { name, email, role, phoneNumber, bio, language, profileImage } =
+      req.body;
 
     const updatedUser = await User.findByIdAndUpdate(
-      req.params.userId,
-      {
-        name,
-        email,
-        role,
-        phoneNumber,
-        bio,
-        language,
-        profileImage,
-      },
+      userId,
+      { name, email, role, phoneNumber, bio, language, profileImage },
       { new: true }
     );
 
@@ -79,10 +65,11 @@ exports.updateUser = async (req, res) => {
   }
 };
 
-// Delete a user by ID
 exports.deleteUser = async (req, res) => {
   try {
-    const deletedUser = await User.findByIdAndDelete(req.params.userId);
+    const userId = req.user ? req.user.id : req.params.userId;
+    const deletedUser = await User.findByIdAndDelete(userId);
+
     if (!deletedUser) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -92,10 +79,11 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// Get user tasks by user ID
 exports.getUserTasks = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId).populate("tasks");
+    const userId = req.user ? req.user.id : req.params.userId;
+    const user = await User.findById(userId).populate("tasks");
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -105,36 +93,37 @@ exports.getUserTasks = async (req, res) => {
   }
 };
 
-// Get user notifications by user ID
 exports.getUserNotifications = async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId).populate("notifications");
+    const userId = req.user ? req.user.id : req.params.userId;
+    const user = await User.findById(userId).populate("notifications");
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json(user.notifications);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching user notifications", error });
+    res
+      .status(500)
+      .json({ message: "Error fetching user notifications", error });
   }
 };
 
-// Change user password
 exports.changeUserPassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    const user = await User.findById(req.params.userId);
+    const userId = req.user ? req.user.id : req.params.userId;
 
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if old password matches
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Old password is incorrect" });
     }
 
-    // Update password
     user.password = newPassword;
     await user.save();
 

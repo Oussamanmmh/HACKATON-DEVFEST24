@@ -1,11 +1,12 @@
-// controllers/notificationController.js
 const Notification = require("../models/Notification");
 const User = require("../models/User");
 
 // Create a new notification
 exports.createNotification = async (req, res) => {
   try {
-    const { userId, title, message, machineId, taskId } = req.body;
+    // Get user data from token
+    const userId = req.user.id;
+    const { title, message, machineId, taskId } = req.body;
 
     const newNotification = new Notification({
       userId,
@@ -43,7 +44,8 @@ exports.getAllNotifications = async (req, res) => {
 // Get notifications by user ID
 exports.getNotificationsByUserId = async (req, res) => {
   try {
-    const userId = req.params.userId;
+    // Get userId from token
+    const userId = req.user.id;
     const notifications = await Notification.find({ userId });
     res.status(200).json(notifications);
   } catch (error) {
