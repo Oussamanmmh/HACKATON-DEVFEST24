@@ -2,7 +2,12 @@
 const mongoose = require("mongoose");
 
 const cncMillingSchema = new mongoose.Schema({
-  machine_id: { type: String, required: false, unique: true, default: "cnc_milling_004" },
+  machine_id: {
+    type: String,
+    required: false,
+    unique: true,
+    default: "cnc_milling_004",
+  },
   spindle_speed: {
     worker: { type: Number, default: 11000, required: false },
     manager: { type: Number, default: 13000, required: false },
