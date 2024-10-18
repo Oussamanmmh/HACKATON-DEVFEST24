@@ -28,7 +28,7 @@ const connectDB = async () => {
   try {
     await mongoose.connect(
       process.env.MONGODB_URI ||
-      "mongodb+srv://younes:younes@cluster0.8fm7l.mongodb.net/sensorDb?retryWrites=true&w=majority",
+        "mongodb+srv://younes:younes@cluster0.8fm7l.mongodb.net/sensorDb?retryWrites=true&w=majority",
       {}
     );
     console.log("MongoDB connected successfully");
@@ -52,13 +52,15 @@ app.use(logger);
 const authRoutes = require("./routes/authRoutes");
 const uploadAttachment = require("./routes/uploadRoutes");
 const machineThresholdRoutes = require("./routes/machineThresholdRoutes");
-// routes
+const taskRoutes = require("./routes/taskRoutes");
 
+// routes
 
 app.use("/api/machine-thresholds", machineThresholdRoutes);
 app.use("/webhook-v1", webhookRoutes);
 app.use("/upload", uploadAttachment);
 app.use("/auth", authRoutes);
+app.use("/api", taskRoutes);
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
