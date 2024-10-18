@@ -20,7 +20,6 @@
     "dotenv": "^16.4.5",
     "events": "^3.3.0",
     "express": "^4.21.1",
-    "express-fileupload": "^1.5.1",
     "express-flash": "^0.0.2",
     "express-rate-limit": "^7.4.1",
     "express-session": "^1.18.1",

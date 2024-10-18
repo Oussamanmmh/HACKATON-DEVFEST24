@@ -13,7 +13,6 @@ const http = require("http");
 const helmet = require("helmet");
 const cors = require("cors");
 const morgan = require("morgan");
-const fileUpload = require("express-fileupload");
 const { Server } = require("socket.io");
 
 const logger = require("./middlewares/logger");
@@ -40,27 +39,24 @@ const connectDB = async () => {
 };
 connectDB();
 
-
 app.use(bodyParser.json());
-app.use(fileUpload());
+// app.use(fileUpload());
 app.use(helmet());
 app.use(cors());
 app.use(morgan("dev"));
+// app.use(fileUpload());
 
 app.use(logger);
 
-
 // import routes
 const authRoutes = require("./routes/authRoutes");
-
+const uploadAttachment = require("./routes/uploadRoutes");
 
 // routes
 
 app.use("/webhook-v1", webhookRoutes);
+app.use("/upload", uploadAttachment);
 app.use("/auth", authRoutes);
-
-
-app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
