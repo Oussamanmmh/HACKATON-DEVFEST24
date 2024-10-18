@@ -28,6 +28,6 @@ router.get("/cnc-machine", cncController.getData);
 router.post("/leak-test", leakTestController.receiveData);
 router.get("/leak-test", leakTestController.getData);
 
-router.post("/receive-data", processMachineData);
+// router.post("/receive-data", processMachineData);
 
 module.exports = router;

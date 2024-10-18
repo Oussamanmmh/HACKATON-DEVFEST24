@@ -1,23 +1,30 @@
-const CNCMachine = require("../models/cncModel");
+const CNC = require("../models/cncModel");
+const { processMachineData } = require("../controllers/machineController");
 
 exports.receiveData = async (req, res) => {
   try {
     const data = req.body;
-    const newCNCData = new CNCMachine(data);
+
+    // Save the CNC machine data to the database
+    const newCNCData = new CNC(data);
     await newCNCData.save();
-    res.status(200).send("CNC Machine data stored");
+    // console.log("CNC Machine data saved:", data);
+
+    // Pass the data to processMachineData for analysis
+    await processMachineData(data);
+
+    res.status(200).send("CNC Machine data stored and processed");
   } catch (error) {
-    console.error("Error storing CNC Machine data:", error);
+    console.error("Error storing CNC machine data:", error);
     res.status(500).send("Server Error");
   }
 };
-
 exports.getData = async (req, res) => {
-    try {
-      const data = await CNCMachine.find();
-      res.status(200).json(data);
-    } catch (error) {
-      console.error("Error retrieving CNC machine data:", error);
-      res.status(500).send("Server Error");
-    }
-  };
+  try {
+    const data = await CNCMachine.find();
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error retrieving CNC machine data:", error);
+    res.status(500).send("Server Error");
+  }
+};
