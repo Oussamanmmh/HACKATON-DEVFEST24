@@ -1,4 +1,3 @@
-// controllers/taskSchedulerController.js
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const MachineLog = require("../models/machineLogModel");
 const TaskSchedule = require("../models/TaskSchedule");
@@ -10,10 +9,8 @@ const User = require("../models/User");
 const API_KEY = "AIzaSyCjOOqsIN_KuT26wdTrG0fz0tpPyXy2ULw";
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-// Function to fetch the last 30 logs from MongoDB and generate the task schedule
 exports.generateTaskSchedule = async (req, res) => {
   try {
-    // Fetch the last 30 logs for each machine from MongoDB
     const machineLogs = await MachineLog.find()
       .sort({ timestamp: -1 })
       .limit(30);
@@ -22,7 +19,6 @@ exports.generateTaskSchedule = async (req, res) => {
       return res.status(404).json({ error: "No logs found." });
     }
 
-    // Prepare prompt for the Gemini LLM
     const prompt = `
     You are analyzing machine logs from a manufacturing plant. There are 6 different machines, and you will receive the last 30 logs for each machine. These machines are critical to plant operations, and their maintenance and operational health are regularly monitored.
 
@@ -103,6 +99,8 @@ exports.generateTaskSchedule = async (req, res) => {
     \`\`\`
 
     ### Requirements:
+    - only generate json we asked for and nothing else because your answer will be used in  
+      const schedule = JSON.parse(result.response.text());
     - The array should contain exactly 6 elements, one for each machine.
     - Each machine should have a scheduled task based on the severity of its warnings or sensor data.
     - You should ensure that tasks with critical warnings (e.g., "danger") are scheduled earlier with higher priority.
@@ -110,12 +108,13 @@ exports.generateTaskSchedule = async (req, res) => {
     `;
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent({ prompt });
 
-    // Parse the generated schedule
-    const schedule = JSON.parse(result.response.text());
+    const result = await model.generateContent(prompt);
+    console.log(result.response.text());
 
-    // Save the generated schedule to MongoDB
+    const cleanResponse = result.response.text().replace(/```json|```/g, "");
+    const schedule = JSON.parse(cleanResponse);
+
     for (const task of schedule.schedule) {
       const newTask = new TaskSchedule({
         machine_id: task.machine_id,
@@ -127,7 +126,6 @@ exports.generateTaskSchedule = async (req, res) => {
 
       await newTask.save();
 
-      // Send notifications and assign tasks if required
       if (task.priority === "high" || task.priority === "medium") {
         await notifyWorker(
           task.machine_id,
@@ -147,7 +145,6 @@ exports.generateTaskSchedule = async (req, res) => {
   }
 };
 
-// Notify workers and assign tasks
 const notifyWorker = async (machineId, action, scheduledDate, workerRole) => {
   const workers = await User.find({ role: workerRole });
 
@@ -163,7 +160,6 @@ const notifyWorker = async (machineId, action, scheduledDate, workerRole) => {
     const now = new Date();
     let taskScheduledDate = new Date(scheduledDate);
 
-    // Adjust schedule date if it's outside working hours
     const startOfWorkDay = new Date(now.setHours(9, 0, 0, 0));
     const endOfWorkDay = new Date(now.setHours(18, 0, 0, 0));
 
@@ -176,7 +172,6 @@ const notifyWorker = async (machineId, action, scheduledDate, workerRole) => {
       taskScheduledDate.setHours(9, 0, 0, 0);
     }
 
-    // Create a new notification
     const newNotification = new Notification({
       userId: worker._id,
       title: `Task Assigned: ${action}`,
@@ -188,14 +183,13 @@ const notifyWorker = async (machineId, action, scheduledDate, workerRole) => {
     worker.notifications.push(newNotification._id);
     await worker.save();
 
-    // Create a task for the worker
     const task = new Task({
       userId: worker._id,
       taskTitle: `${action} for Machine ${machineId}`,
       description: `Please perform ${action} on Machine ${machineId}.`,
       scheduledDate: taskScheduledDate,
       isDone: false,
-      taskType: "maintenance", // Adjust according to the action
+      taskType: "maintenance",
       machineData: {
         machine_id: machineId,
         action: action,
