@@ -1,4 +1,5 @@
 const Task = require("../models/taskModel");
+const ProductController = require("../controllers/productController");
 const { sendPushNotification } = require("../services/firebaseService");
 const User = require("../models/User");
 const MachineLog = require("../models/machineLogModel");
@@ -55,6 +56,8 @@ exports.processMachineData = async (data, thresholds) => {
   });
 
   await log.save();
+
+  await ProductController.incrementProductCount(warnings);
 
   console.info("Machine log saved successfully.");
 };
