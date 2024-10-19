@@ -4,16 +4,16 @@ const mongoose = require("mongoose");
 const stampingPressSchema = new mongoose.Schema({
   machine_id: { type: String, required: false, unique: true , default: "stamping_press_001"},
   temperature: {
-    worker: { type: Number, default: 70, required: false },
-    manager: { type: Number, default: 90, required: false },
+    worker: { type: Number, default: 85, required: false },
+    manager: { type: Number, default: 95, required: false },
   },
   vibration_level: {
     worker: { type: Number, default: 0.7, required: false },
-    manager: { type: Number, default: 1.5, required: false },
+    manager: { type: Number, default:  0.9, required: false },
   },
   power_consumption: {
-    worker: { type: Number, default: 10.0, required: false },
-    manager: { type: Number, default: 15.0, required: false },
+    worker: { type: Number, default: 15 , required: false },
+    manager: { type: Number, default: 19.0, required: false },
   },
   force_applied: {
     worker: { type: Number, default: 450, required: false },

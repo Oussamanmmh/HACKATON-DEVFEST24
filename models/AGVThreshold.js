@@ -10,15 +10,15 @@ const agvSchema = new mongoose.Schema({
   },
   battery_level: {
     worker: { type: Number, default: 30, required: false },
-    manager: { type: Number, default: 15, required: false },
+    manager: { type: Number, default: 20, required: false },
   },
   load_weight: {
-    worker: { type: Number, default: 400, required: false },
-    manager: { type: Number, default: 600, required: false },
+    worker: { type: Number, default: 900, required: false },
+    manager: { type: Number, default: 1100, required: false },
   },
   speed: {
-    worker: { type: Number, default: 1.0, required: false },
-    manager: { type: Number, default: 1.5, required: false },
+    worker: { type: Number, default: 3, required: false },
+    manager: { type: Number, default: 4, required: false },
   },
   distance_traveled: {
     worker: { type: Number, default: 1000, required: false },

@@ -9,16 +9,16 @@ const leakTestSchema = new mongoose.Schema({
     default: "leak_test_005",
   },
   test_pressure: {
-    worker: { type: Number, default: 4.5, required: false },
-    manager: { type: Number, default: 6.0, required: false },
+    worker: { type: Number, default: 8.5, required: false },
+    manager: { type: Number, default: 9.5, required: false },
   },
   pressure_drop: {
-    worker: { type: Number, default: 0.015, required: false },
-    manager: { type: Number, default: 0.025, required: false },
+    worker: { type: Number, default: 0.07, required: false },
+    manager: { type: Number, default: 0.09, required: false },
   },
   leak_rate: {
-    worker: { type: Number, default: 0.1, required: false },
-    manager: { type: Number, default: 0.3, required: false },
+    worker: { type: Number, default: 0.08, required: false },
+    manager: { type: Number, default: 0.095, required: false },
   },
   test_duration: {
     worker: { type: Number, default: 40, required: false },
