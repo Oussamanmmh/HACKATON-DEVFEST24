@@ -45,7 +45,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const userId = req.user ? req.user.id : req.params.userId;
+    const userId =  req.params.userId;
     const { name, email, role, phoneNumber, bio, language, profileImage } =
       req.body;
 

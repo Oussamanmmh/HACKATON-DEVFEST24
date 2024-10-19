@@ -1,3 +1,4 @@
+### main branch : master
 ### Environment Variables (.env)
 
 To configure the project, create a `.env` file in the root of your project with the following environment variables:
