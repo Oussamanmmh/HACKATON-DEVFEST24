@@ -1,8 +1,14 @@
-### Environment Variables (.env)
+# Manufacturing Sensor Data Backend
 
-To configure the project, create a `.env` file in the root of your project with the following environment variables:
+This project is a backend for processing real-time manufacturing sensor data from machines such as welding robots, stamping presses, CNC machines, AGVs, and more. The system provides APIs for receiving and tracking machine data, including the number of products produced.
 
-```bash
+## Setup
+
+### 1. Set Up Environment Variables
+
+Create a `.env` file in the root directory with the following content:
+
+```plaintext
 # Server configuration
 PORT=4000
 NODE_ENV=development
@@ -11,30 +17,34 @@ NODE_ENV=development
 MONGO_URI=mongodb+srv://younes:younes@cluster0.8fm7l.mongodb.net/sensorDb?retryWrites=true&w=majority
 
 # JWT configuration
-JWT_ACCESS_EXPIRES_IN=3d                 # Access token expiration (e.g., 3 days)
-JWT_REFRESH_EXPIRES_IN=7d                # Refresh token expiration (e.g., 7 days)
+JWT_ACCESS_EXPIRES_IN=3d                 # Access token expiration
+JWT_REFRESH_EXPIRES_IN=7d                # Refresh token expiration
 
 # Secret keys for JWT tokens
-JWT_SECRET=b411c485b40b4966f4525d11de3fbdd370eca504693494265f45597edb9012b447e953d857dec02fc711e69767c01b3a530c2bae6bdedd63ee866c3bf259b62c
-JWT_REFRESH_SECRET=588c31563bd905cb46a15cca1ad7e83ef9810f4d23943ce65e1bef65ad5b351fe32d0c2442acc3add19ee0b7a58fe95b36ee6a0d502a95dd30abc1b1e60e21c3
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_refresh_jwt_secret
+```
 
-# Email configuration (Gmail)
-EMAIL_USER=hellalet.younes@gmail.com
-EMAIL_PASS=yxmh ovfm pxqo yshi
+### 2.Install Dependencies
 
-# Google OAuth configuration
-GOOGLE_CLIENT_ID=your-google-client-id
+Run the following command to install the required packages:
 
-# Apple OAuth configuration
-APPLE_CLIENT_ID=your-apple-client-id
-APPLE_TEAM_ID=your-apple-team-id
-APPLE_KEY_ID=your-apple-key-id
-APPLE_PRIVATE_KEY=your-apple-private-key
+```
+npm install
+```
 
-# Stripe configuration
-STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+### 3. Start the Server
 
-# PayPal configuration
-PAYPAL_CLIENT_ID=your_paypal_client_id
-PAYPAL_CLIENT_SECRET=your_paypal_client_secret
-PAYPAL_MODE=sandbox  # Use 'live' for production
+Run the development server with:
+
+```
+npm run dev
+// The server will start on http://localhost:4000.
+```
+
+4. Expose Server for Webhooks (Optional)
+   To expose your local server for webhooks or external connections, you can use localtunnel:
+
+```plaintext
+lt --port 4000 --subdomain cool-api-project --local-host "localhost" -o --print-requests
+```
