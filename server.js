@@ -40,11 +40,9 @@ const connectDB = async () => {
 connectDB();
 
 app.use(bodyParser.json());
-// app.use(fileUpload());
 app.use(helmet());
 app.use(cors());
 app.use(morgan("dev"));
-// app.use(fileUpload());
 
 app.use(logger);
 
@@ -58,14 +56,14 @@ const userRoutes = require("./routes/userRoutes");
 const aiRoutes = require("./routes/taskSchedulerRoutes.js");
 const energyRoutes = require("./routes/energyRoutes.js");
 const chatRoutes = require("./routes/chatRoutes.js");
-const logRoutes = require('./routes/logRoutes');
-const historicalDataRoutes = require('./routes/historicalDataRoutes');
+const logRoutes = require("./routes/logRoutes");
+const historicalDataRoutes = require("./routes/historicalDataRoutes");
 
 // routes
 
 app.use("/machine-thresholds", machineThresholdRoutes);
 app.use("/webhook-v1", webhookRoutes);
-app.use("/upload", uploadAttachment);
+// app.use("/upload", uploadAttachment);  // out of order
 app.use("/auth", authRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/notifications", notificationRoutes);
@@ -73,8 +71,8 @@ app.use("/users", userRoutes);
 app.use("/ai", aiRoutes);
 app.use("/energy", energyRoutes);
 app.use("/chat", chatRoutes);
-app.use('/historical-data', historicalDataRoutes);
-app.use('/logs', logRoutes); // Set up route for machine logs
+app.use("/historical-data", historicalDataRoutes);
+app.use("/logs", logRoutes);
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
