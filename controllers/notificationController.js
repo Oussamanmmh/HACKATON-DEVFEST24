@@ -45,7 +45,7 @@ exports.getAllNotifications = async (req, res) => {
 exports.getNotificationsByUserId = async (req, res) => {
   try {
     // Get userId from token
-    const userId = req.user.id;
+    const userId = req.user.id || req.params.userId;
     const notifications = await Notification.find({ userId });
     res.status(200).json(notifications);
   } catch (error) {
@@ -87,7 +87,6 @@ exports.deleteNotification = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 // Get current user's notifications (based on the JWT token)
 exports.getNotificationsForCurrentUser = async (req, res) => {

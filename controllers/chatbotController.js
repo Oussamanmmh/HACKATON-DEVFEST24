@@ -28,6 +28,7 @@ async function fetchErrorLogs() {
 }
 
 exports.startChat = async (req, res) => {
+  
   try {
     const historicalData = await fetchHistoricalData();
     const realTimeData = await fetchRealTimeData();
