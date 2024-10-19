@@ -13,38 +13,55 @@ const bucket = admin.storage().bucket();
 
 /**
  * Upload file to Firebase under a custom path.
- * @param {Object} file - The file object.
- * @param {String} filePath - The chatId for custom directory.
+ * @param {Object} file - The file object from multer.
+ * @param {String} filePath - The custom directory path.
  */
 const uploadFileToFirebase = async (file, filePath) => {
   return new Promise((resolve, reject) => {
     console.log(file); // Log the file object for debugging
 
-    if (!file || !file.name) {
-      return reject(new Error("File object or name property is missing."));
+    // Check if file and originalname exist
+    if (!file || !file.originalname) {
+      return reject(
+        new Error("File object or originalname property is missing.")
+      );
     }
 
-    const filename = `${Date.now()}${path.extname(file.name)}`;
-    const firebaseFilePath = `uploads/${filePath}/${filename}`;
+    // Create a unique filename with the original extension
+    const filename = `${Date.now()}${path.extname(file.originalname)}`;
+    const firebaseFilePath = `${filePath}/${filename}`;
 
+    // Reference to the Firebase file
     const firebaseFile = bucket.file(firebaseFilePath);
 
+    // Create a write stream to Firebase
     const stream = firebaseFile.createWriteStream({
       metadata: { contentType: file.mimetype },
     });
 
+    // Handle stream errors
     stream.on("error", (error) => reject(error));
 
+    // On finish, make the file public and return its URL
     stream.on("finish", async () => {
-      await firebaseFile.makePublic();
-      const publicUrl = format(
-        `https://storage.googleapis.com/${bucket.name}/${firebaseFile.name}`
-      );
-      resolve(publicUrl); // Return the public URL of the uploaded file
+      try {
+        await firebaseFile.makePublic(); // Make the file publicly accessible
+        const publicUrl = format(
+          `https://storage.googleapis.com/${bucket.name}/${firebaseFile.name}`
+        );
+        resolve(publicUrl); // Resolve the public URL
+      } catch (error) {
+        reject(new Error("Error making the file public: " + error.message));
+      }
     });
 
-    stream.end(file.data); // Send the file buffer to Firebase
+    // Send the file buffer to Firebase
+    stream.end(file.buffer);
   });
+};
+
+module.exports = {
+  uploadFileToFirebase,
 };
 
 /**

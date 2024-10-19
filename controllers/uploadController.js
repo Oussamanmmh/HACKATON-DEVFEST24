@@ -2,15 +2,14 @@
 const { uploadFileToFirebase } = require("../services/firebaseService");
 const { AppError } = require("../utils/errorHandler");
 
-// Upload Attachment (without catchAsync)
 exports.uploadAttachment = async (req, res, next) => {
   try {
-    // Check if files were uploaded
-    if (!req.files || !req.files.attachment) {
-      return next(new AppError("No file uploaded", 400)); // Custom error handling
+    // Check if a file was uploaded
+    if (!req.file) {
+      throw new AppError("No file uploaded", 400);
     }
 
-    const file = req.files.attachment; // This gets the uploaded file
+    const file = req.file; // Access the uploaded file via multer
     const fileUrl = await uploadFileToFirebase(file, "uploads");
 
     // Respond with success and the file URL
