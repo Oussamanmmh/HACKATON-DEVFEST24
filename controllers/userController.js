@@ -20,7 +20,7 @@ exports.createUser = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
   try {
-    const userId = req.user ? req.user.id : req.params.userId;
+    const userId =  req.params.userId;
     const user = await User.findById(userId)
       .populate("tasks")
       .populate("notifications");
