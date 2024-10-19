@@ -4,16 +4,16 @@ const mongoose = require("mongoose");
 const weldingRobotSchema = new mongoose.Schema({
   machine_id: { type: String, required: false, unique: true, default: "welding_robot_006" },
   weld_temperature: {
-    worker: { type: Number, default: 1500, required: false },
-    manager: { type: Number, default: 1700, required: false },
+    worker: { type: Number, default: 1800, required: false },
+    manager: { type: Number, default: 1900, required: false },
   },
   vibration_level: {
-    worker: { type: Number, default: 0.5, required: false },
-    manager: { type: Number, default: 1.0, required: false },
+    worker: { type: Number, default: 0.7, required: false },
+    manager: { type: Number, default: 0.9, required: false },
   },
   power_consumption: {
-    worker: { type: Number, default: 3.0, required: false },
-    manager: { type: Number, default: 5.0, required: false },
+    worker: { type: Number, default:  8.5, required: false },
+    manager: { type: Number, default:  9.5, required: false },
   },
   weld_current: {
     worker: { type: Number, default: 140, required: false },

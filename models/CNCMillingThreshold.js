@@ -9,16 +9,16 @@ const cncMillingSchema = new mongoose.Schema({
     default: "cnc_milling_004",
   },
   spindle_speed: {
-    worker: { type: Number, default: 11000, required: false },
-    manager: { type: Number, default: 13000, required: false },
+    worker: { type: Number, default: 13000 , required: false },
+    manager: { type: Number, default: 14000 , required: false },
   },
   vibration_level: {
-    worker: { type: Number, default: 1.0, required: false },
-    manager: { type: Number, default: 1.5, required: false },
+    worker: { type: Number, default: 0.7, required: false },
+    manager: { type: Number, default: 0.9, required: false },
   },
   power_consumption: {
-    worker: { type: Number, default: 9.0, required: false },
-    manager: { type: Number, default: 12.0, required: false },
+    worker: { type: Number, default: 16.0, required: false },
+    manager: { type: Number, default: 19.0, required: false },
   },
   tool_wear_level: {
     worker: { type: Number, default: 30, required: false },
