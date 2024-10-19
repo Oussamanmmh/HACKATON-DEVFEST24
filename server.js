@@ -63,7 +63,7 @@ const historicalDataRoutes = require("./routes/historicalDataRoutes");
 
 app.use("/machine-thresholds", machineThresholdRoutes);
 app.use("/webhook-v1", webhookRoutes);
-// app.use("/upload", uploadAttachment);  // out of order
+app.use("/upload", uploadAttachment); // out of order
 app.use("/auth", authRoutes);
 app.use("/tasks", taskRoutes);
 app.use("/notifications", notificationRoutes);

@@ -61,50 +61,50 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        status: 'failed',
-        message: 'Validation errors',
-        errors: errors.array(),
-      });
-    }
-  
-    const { email, password } = req.body;
-  
-    try {
-      // Find the user by email
-      const user = await User.findOne({ email });
-      if (!user) return res.status(400).json({ msg: 'User not found' });
-  
-      // Check if the password matches
-      const isMatch = await bcrypt.compare(password, user.password);
-      if (!isMatch) return res.status(400).json({ msg: 'Password Incorrect' });
-  
-      // Generate access token and refresh token
-      const accessToken = generateAccessToken(user.id);
-      const refreshToken = generateRefreshToken(user.id);
-  
-      // Store refresh token in the database
-      user.refreshToken = refreshToken;
-      await user.save();
-  
-      res.status(200).json({
-        accessToken: {
-          token: accessToken,
-          expiresOn: process.env.JWT_ACCESS_EXPIRES_IN,
-        },
-        refreshToken: {
-          token: refreshToken,
-          expiresOn: process.env.JWT_REFRESH_EXPIRES_IN,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ msg: 'Server error' });
-    }
-  };
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      status: "failed",
+      message: "Validation errors",
+      errors: errors.array(),
+    });
+  }
 
+  const { email, password } = req.body;
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: "User not found" });
+
+    // Check if the password matches
+    const isMatch = bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ msg: "Password Incorrect" });
+
+    // Generate access token and refresh token
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
+    // Store refresh token in the database
+    user.refreshToken = refreshToken;
+    const response = await user.save();
+
+    res.status(200).json({
+      userId: response._id.toString(),
+      accessToken: {
+        token: accessToken,
+        expiresOn: process.env.JWT_ACCESS_EXPIRES_IN,
+      },
+      refreshToken: {
+        token: refreshToken,
+        expiresOn: process.env.JWT_REFRESH_EXPIRES_IN,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
 
 exports.refreshToken = async (req, res) => {
   const { refreshToken } = req.body;
