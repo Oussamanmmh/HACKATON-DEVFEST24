@@ -134,6 +134,7 @@ exports.markTaskAsDone = async (req, res) => {
 };
 
 exports.getTasksByUserId = async (req, res) => {
+  
   try {
     const userId = req.user?._id || req.params.userId;
     const tasks = await Task.find({ userId }).populate("userId", "name email");
