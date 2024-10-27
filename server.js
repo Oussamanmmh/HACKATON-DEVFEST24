@@ -75,6 +75,7 @@ app.use("/chat", chatRoutes);
 app.use("/historical-data", historicalDataRoutes);
 app.use("/logs", logRoutes);
 app.use("/order-tracking",productTrackingRoutes);
+//visualization . 
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
